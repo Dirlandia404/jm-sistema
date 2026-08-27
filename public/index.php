@@ -3,18 +3,76 @@
 declare(strict_types=1);
 
 use Core\Database;
+use App\Models\User;
+use App\Controllers\AuthController;
 
+//inicia sessão
+session_start();
 //carrega classe de configuração do banco de dados
 require_once __DIR__ . '/../core/Database.php';
+require_once __DIR__ .'/../app/Models/User.php';
+require_once __DIR__ .'/../app/Controllers/AuthController.php';
 
 //carrega o arquivo de configuração do banco de dados
 $config = require __DIR__ . '/../config/database.php';
 
 //conecta ao banco de dados
-try{
+try {
+    //cria a conexaõ
     $db = new Database($config);
-    $db->getConnection();
-    echo 'Conectado ao banco de dados';
+    //cria o Model
+    $userModel = new User($db->getConnection());
+    //cria o Controller recebendo o Model
+    $authController = new AuthController($userModel);
+
 } catch (\PDOException $exception) {
-    echo 'Erro ao conectar ao banco de dados: ' . $exception->getMessage();
+    error_log($exception->getMessage());    
+    http_response_code(500);
+    echo 'Erro ao conectar ao iniciar app: ' ;
+    exit;
+}
+
+//rotas
+$route = $_GET['route'] ?? 'login';
+
+//exibir tela de login
+if($route === "login"){
+    $error = $_SESSION['login_error'] ?? null;
+    unset($_SESSION['login_error']);
+    require __DIR__ . '/../app/Views/auth/login.php';
+    exit;
+}
+//processa autenticação
+if($route === 'authenticate' && $_SERVER['REQUEST_METHOD'] === 'POST'){
+    $email = (string) ($_POST['email'] ?? '');
+    $password = (string) ($_POST['password'] ?? '');
+
+    if($authController->login($email, $password)){
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+    $_SESSION['login_error'] = 'Ops, Email ou Senha invalido';
+    header('Location: index.php?route=login');
+    exit;
+    
+}
+//exibir tela de dashboard
+if($route === "dashboard"){
+    if(!isset($_SESSION['user'])){
+        header('Location: index.php?route=login');
+        exit;
+    }
+    //disponibiliza os dados do user
+    $loggedUser = $_SESSION["user"];
+
+    //carrega a tela de dashboard
+    require __DIR__ . '/../app/Views/dashboard/index.php';
+    exit;
+}
+//exibir tela de logout
+if($route === "logout"){
+    $authController->logout();
+    header('Location: index.php?route=login');
+    exit;
+
 }
