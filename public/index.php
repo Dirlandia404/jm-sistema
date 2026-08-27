@@ -4,6 +4,7 @@ declare(strict_types=1);
 
 use Core\Database;
 use App\Models\User;
+use App\Models\Service;
 use App\Controllers\AuthController;
 
 //inicia sessão
@@ -11,6 +12,7 @@ session_start();
 //carrega classe de configuração do banco de dados
 require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ .'/../app/Models/User.php';
+require_once __DIR__ .'/../app/Models/Service.php';
 require_once __DIR__ .'/../app/Controllers/AuthController.php';
 
 //carrega o arquivo de configuração do banco de dados
@@ -20,8 +22,10 @@ $config = require __DIR__ . '/../config/database.php';
 try {
     //cria a conexaõ
     $db = new Database($config);
+    $connection = $db->getConnection();
     //cria o Model
-    $userModel = new User($db->getConnection());
+    $userModel = new User($connection);
+    $serviceModel = new Service($connection);
     //cria o Controller recebendo o Model
     $authController = new AuthController($userModel);
 
@@ -64,6 +68,7 @@ if($route === "dashboard"){
     }
     //disponibiliza os dados do user
     $loggedUser = $_SESSION["user"];
+    $service = $serviceModel->findAll();
 
     //carrega a tela de dashboard
     require __DIR__ . '/../app/Views/dashboard/index.php';
