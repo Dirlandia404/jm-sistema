@@ -38,4 +38,30 @@ class Service{
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    //cadastra um novo serviço para o usuario logado
+    public function create(string $description, string $price, int $userId): bool{
+        $sql = '
+            INSERT INTO service(
+                description,
+                price,
+                created_at,
+                finished_at,
+                commission_user,
+                user_id_user
+            ) VALUES (
+                :description,
+                :price,
+                NOW(),
+                NULL,
+                0,
+                :user_id_user
+            )
+        ';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(':description', $description, PDO::PARAM_STR);
+        $stmt->bindValue(':price', $price, PDO::PARAM_STR);
+        $stmt->bindValue(':user_id_user', $userId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
 }

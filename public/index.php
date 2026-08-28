@@ -6,6 +6,7 @@ use Core\Database;
 use App\Models\User;
 use App\Models\Service;
 use App\Controllers\AuthController;
+use App\Controllers\ServiceController;
 
 //inicia sessão
 session_start();
@@ -14,6 +15,7 @@ require_once __DIR__ . '/../core/Database.php';
 require_once __DIR__ .'/../app/Models/User.php';
 require_once __DIR__ .'/../app/Models/Service.php';
 require_once __DIR__ .'/../app/Controllers/AuthController.php';
+require_once __DIR__ .'/../app/Controllers/ServiceController.php';
 
 //carrega o arquivo de configuração do banco de dados
 $config = require __DIR__ . '/../config/database.php';
@@ -28,6 +30,7 @@ try {
     $serviceModel = new Service($connection);
     //cria o Controller recebendo o Model
     $authController = new AuthController($userModel);
+    $serviceController = new ServiceController($serviceModel);
 
 } catch (\PDOException $exception) {
     error_log($exception->getMessage());    
@@ -55,10 +58,20 @@ if($route === 'authenticate' && $_SERVER['REQUEST_METHOD'] === 'POST'){
         header('Location: index.php?route=dashboard');
         exit;
     }
-    $_SESSION['login_error'] = 'Ops, Email ou Senha invalido';
+    $_SESSION['login_error'] = 'Ops, Email ou Senha inválido';
     header('Location: index.php?route=login');
     exit;
     
+}
+//exibe formulario de cadastro de serviço
+if($route === "service-create"){
+    $serviceController->create();
+    exit;
+}
+//processa cadastro de serviço
+if($route === 'service-store' && $_SERVER['REQUEST_METHOD'] === 'POST'){
+    $serviceController->store();
+    exit;
 }
 //exibir tela de dashboard
 if($route === "dashboard"){
@@ -66,11 +79,17 @@ if($route === "dashboard"){
         header('Location: index.php?route=login');
         exit;
     }
-    //disponibiliza os dados do user
-    $loggedUser = $_SESSION["user"];
-    $service = $serviceModel->findAll();
+    $loggedUser = $_SESSION['user'];
+    $services = $serviceModel->findAll();
 
-    //carrega a tela de dashboard
+    $serviceSuccess = $_SESSION['service_success'] ?? null;
+    $serviceError = $_SESSION['service_error'] ?? null;
+
+    unset(
+        $_SESSION['service_success'],
+        $_SESSION['service_error']
+    );
+
     require __DIR__ . '/../app/Views/dashboard/index.php';
     exit;
 }

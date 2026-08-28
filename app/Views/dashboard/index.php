@@ -38,6 +38,16 @@ declare(strict_types=1);
         ) ?>
     </p>
 
+    <!--Cadastro novo serviço -->
+    <a href="index.php?route=service-create">Cadastrar novo serviço</a>
+    <?php if ($serviceSuccess): ?>
+        <p><?= htmlspecialchars($serviceSuccess) ?></p>
+    <?php endif; ?>
+
+    <?php if ($serviceError): ?>
+        <p><?= htmlspecialchars($serviceError) ?></p>
+    <?php endif; ?>
+
     <!-- Exibe a data atual exigida no enunciado. -->
     <p>Data atual: <?= date('d/m/Y') ?></p>
 
