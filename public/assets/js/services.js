@@ -1,13 +1,26 @@
 "use strict";
 
-const deleteForms = document.querySelectorAll(".delete-service-form");
+//Adiciona confirmação antes do envio de um formulário
+function addFormConfirmation(selector, message) {
+  const forms = document.querySelectorAll(selector);
 
-deleteForms.forEach(function (form) {
-  form.addEventListener("submit", function (event) {
-    const confirmed = window.confirm("Deseja realmente excluir este serviço?");
+  forms.forEach(function (form) {
+    form.addEventListener("submit", function (event) {
+      const confirmed = window.confirm(message);
 
-    if (!confirmed) {
-      event.preventDefault();
-    }
+      if (!confirmed) {
+        event.preventDefault();
+      }
+    });
   });
-});
+}
+
+addFormConfirmation(
+  ".delete-service-form",
+  "Deseja realmente excluir este serviço?",
+);
+
+addFormConfirmation(
+  ".finish-service-form",
+  "Deseja realmente finalizar este serviço?",
+);
