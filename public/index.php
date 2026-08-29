@@ -73,6 +73,15 @@ if($route === 'service-store' && $_SERVER['REQUEST_METHOD'] === 'POST'){
     $serviceController->store();
     exit;
 }
+//processa exclusao
+if($route === 'service-delete'){
+    if($_SERVER['REQUEST_METHOD'] !== 'POST'){
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+    $serviceController->delete();
+    exit;
+}
 //exibir formulario de edição
 if($route === "service-edit"){
     $serviceId = (int) ($_GET['id'] ?? 0);

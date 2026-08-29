@@ -84,11 +84,7 @@ class Service{
         return $service ?: null;
     }
     //atualiza dados do serviço
-    public function update(
-        int $serviceId,
-        string $description,
-        string $price
-    ): bool {
+    public function update(int $serviceId, string $description, string $price): bool {
         $sql = '
             UPDATE service
             SET
@@ -117,6 +113,16 @@ class Service{
             PDO::PARAM_INT
         );
 
+        return $stmt->execute();
+    }
+    //exclui um serviço pelo ID
+    public function delete(int $serviceId): bool{
+        $sql='
+            DELETE FROM service
+            WHERE id_service = :service_id
+        ';
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(':service_id', $serviceId, PDO::PARAM_INT);
         return $stmt->execute();
     }
 }

@@ -111,15 +111,33 @@ declare(strict_types=1);
                         </td>
                         <td>
                             <a
-                                href="index.php?route=service-edit&id=<?=(int) $service['id_service']?>"
+                                href="index.php?route=service-edit&id=<?= (int) $service['id_service'] ?>"
                             >
                                 Alterar
                             </a>
+
+                            <form
+                                action="index.php?route=service-delete"
+                                method="POST"
+                                class="delete-service-form"
+                            >
+                                <input
+                                    type="hidden"
+                                    name="service_id"
+                                    value="<?= (int) $service['id_service'] ?>"
+                                >
+
+                                <button type="submit">
+                                    Excluir
+                                </button>
+                            </form>
                         </td>
                     </tr>
                 <?php endforeach; ?>
             </tbody>
         </table>
     <?php endif; ?>
+
+    <script src="assets/js/services.js"></script>
 </body>
 </html>

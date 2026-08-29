@@ -76,8 +76,7 @@ class ServiceController{
             require __DIR__ . '/../Views/services/edit.php';
     }
     // Processa a alteração do serviço.
-    public function update(): void
-    {
+    public function update(): void{
         // Verifica se o usuário está logado.
         if (!isset($_SESSION['user'])) {
             header('Location: index.php?route=login');
@@ -135,6 +134,50 @@ class ServiceController{
         } else {
             $_SESSION['service_error'] =
                 'Não foi possível alterar o serviço.';
+        }
+
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+    //Procesa exclusão
+    public function delete(): void{
+        // Verifica se o usuário está logado.
+        if (!isset($_SESSION['user'])) {
+            header('Location: index.php?route=login');
+            exit;
+        }
+        $serviceId = (int)($_POST['service_id'] ?? 0);
+
+        if($serviceId <= 0){
+            $_SESSION['service_error'] = 'Serviço invalido';
+
+            header('Location: index.php?route=dashboard');
+            exit;
+        }
+        // Verifica se o serviço existe.
+        if ($this->serviceModel->findById($serviceId) === null) {
+            $_SESSION['service_error'] =
+                'Serviço não encontrado.';
+
+            header('Location: index.php?route=dashboard');
+            exit;
+        }
+
+        try {
+            $deleted = $this->serviceModel->delete(
+                $serviceId
+            );
+        } catch (\PDOException $exception) {
+            error_log($exception->getMessage());
+            $deleted = false;
+        }
+
+        if ($deleted) {
+            $_SESSION['service_success'] =
+                'Serviço excluído com sucesso.';
+        } else {
+            $_SESSION['service_error'] =
+                'Não foi possível excluir o serviço.';
         }
 
         header('Location: index.php?route=dashboard');
