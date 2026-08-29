@@ -6,16 +6,15 @@ declare(strict_types=1);
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
 
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Dashboard</title>
 </head>
+
 <body>
     <h1>Dashboard</h1>
 
@@ -98,11 +97,7 @@ declare(strict_types=1);
     <?php endif; ?>
     <!-- Filtra os serviços por nome e período. -->
     <form action="index.php" method="GET">
-        <input
-            type="hidden"
-            name="route"
-            value="dashboard"
-        >
+        <input type="hidden" name="route" value="dashboard">
         <div>
             <label for="service_name">
                 Nome do serviço
@@ -112,85 +107,48 @@ declare(strict_types=1);
                     Nome do funcionário
                 </label>
 
-                <input
-                    type="search"
-                    id="user_name"
-                    name="user_name"
-                    placeholder="Buscar pelo funcionário"
-                    maxlength="150"
-                    value="<?= htmlspecialchars(
-                        $filters['user_name'] ?? '',
-                        ENT_QUOTES,
-                        'UTF-8'
-                    ) ?>"
-                >
+                <input type="search" id="user_name" name="user_name" placeholder="Buscar pelo funcionário" maxlength="150" value="<?= htmlspecialchars(
+                    $filters['user_name'] ?? '',
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>">
             </div>
             <div>
                 <label for="status">
                     Status
                 </label>
 
-                <select
-                    id="status"
-                    name="status"
-                >
-                    <option
-                        value=""
-                        <?= ($filters['status'] ?? '') === ''
-                            ? 'selected'
-                            : '' ?>
-                    >
-                        Todos
-                    </option>
+                <select id="status" name="status">
+                    <option value="" <?= ($filters['status'] ?? '') === ''
+                        ? 'selected'
+                        : '' ?>> Todos </option>
 
-                    <option
-                        value="pendente"
-                        <?= ($filters['status'] ?? '') === 'pendente'
-                            ? 'selected'
-                            : '' ?>
-                    >
-                        Pendente
-                    </option>
+                    <option value="pendente" <?= ($filters['status'] ?? '') === 'pendente'
+                        ? 'selected'
+                        : '' ?>> Pendente </option>
 
-                    <option
-                        value="finalizado"
-                        <?= ($filters['status'] ?? '') === 'finalizado'
-                            ? 'selected'
-                            : '' ?>
-                    >
-                        Finalizado
-                    </option>
+                    <option value="finalizado" <?= ($filters['status'] ?? '') === 'finalizado'
+                        ? 'selected'
+                        : '' ?>> Finalizado </option>
                 </select>
             </div>
 
-            <input
-                type="search"
-                id="service_name"
-                name="service_name"
-                placeholder="Buscar pela descrição"
-                maxlength="45"
-                value="<?= htmlspecialchars(
-                    $filters['service_name'] ?? '',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?>"
-            >
+            <input type="search" id="service_name" name="service_name" placeholder="Buscar pela descrição" maxlength="45" value="<?= htmlspecialchars(
+                $filters['service_name'] ?? '',
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>">
         </div>
         <div>
             <label for="start_date">
                 Data inicial
             </label>
 
-            <input
-                type="date"
-                id="start_date"
-                name="start_date"
-                value="<?= htmlspecialchars(
-                    $filters['start_date'] ?? '',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?>"
-            >
+            <input type="date" id="start_date" name="start_date" value="<?= htmlspecialchars(
+                $filters['start_date'] ?? '',
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>">
         </div>
 
         <div>
@@ -198,16 +156,11 @@ declare(strict_types=1);
                 Data final
             </label>
 
-            <input
-                type="date"
-                id="end_date"
-                name="end_date"
-                value="<?= htmlspecialchars(
-                    $filters['end_date'] ?? '',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?>"
-            >
+            <input type="date" id="end_date" name="end_date" value="<?= htmlspecialchars(
+                $filters['end_date'] ?? '',
+                ENT_QUOTES,
+                'UTF-8'
+            ) ?>">
         </div>
 
         <button type="submit">
@@ -277,22 +230,12 @@ declare(strict_types=1);
                             ) ?>
                         </td>
                         <td>
-                            <a
-                                href="index.php?route=service-edit&id=<?= (int) $service['id_service'] ?>"
-                            >
+                            <a href="index.php?route=service-edit&id=<?= (int) $service['id_service'] ?>">
                                 Alterar
                             </a>
-                            <?php if($service['finished_at'] === null): ?>
-                                <form
-                                    action="index.php?route=service-finish"
-                                    method="POST"
-                                    class="finish-service-form"
-                                >
-                                    <input
-                                        type="hidden"
-                                        name="service_id"
-                                        value="<?= (int) $service['id_service'] ?>"
-                                    >
+                            <?php if ($service['finished_at'] === null): ?>
+                                <form action="index.php?route=service-finish" method="POST" class="finish-service-form">
+                                    <input type="hidden" name="service_id" value="<?= (int) $service['id_service'] ?>">
 
                                     <button type="submit">
                                         Finalizar
@@ -300,16 +243,8 @@ declare(strict_types=1);
                                 </form>
                             <?php endif; ?>
 
-                            <form
-                                action="index.php?route=service-delete"
-                                method="POST"
-                                class="delete-service-form"
-                            >
-                                <input
-                                    type="hidden"
-                                    name="service_id"
-                                    value="<?= (int) $service['id_service'] ?>"
-                                >
+                            <form action="index.php?route=service-delete" method="POST" class="delete-service-form">
+                                <input type="hidden" name="service_id" value="<?= (int) $service['id_service'] ?>">
 
                                 <button type="submit">
                                     Excluir
@@ -324,4 +259,5 @@ declare(strict_types=1);
 
     <script src="assets/js/services.js"></script>
 </body>
+
 </html>

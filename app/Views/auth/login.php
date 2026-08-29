@@ -9,16 +9,15 @@ $registerSuccess = $registerSuccess ?? null;
 
 <!DOCTYPE html>
 <html lang="pt-BR">
+
 <head>
     <meta charset="UTF-8">
-    <meta
-        name="viewport"
-        content="width=device-width, initial-scale=1.0"
-    >
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
     <title>Login</title>
     <link rel="stylesheet" href="/assets/css/login.css">
 </head>
+
 <body>
     <main class="login-page">
         <section class="login-card">
@@ -28,7 +27,7 @@ $registerSuccess = $registerSuccess ?? null;
                 Acesse o sistema de ordem de serviços
             </p>
 
-            <?php if($registerSuccess !== null): ?>
+            <?php if ($registerSuccess !== null): ?>
                 <p class="login-success">
                     <?= htmlspecialchars(
                         $registerSuccess,
@@ -48,26 +47,12 @@ $registerSuccess = $registerSuccess ?? null;
             <form action="index.php?route=authenticate" method="POST" class="login-form">
                 <div class="form-field">
                     <label for="email">E-mail</label>
-                    <input
-                        type="email"
-                        id="email"
-                        name="email"
-                        placeholder="Informe seu e-mail"
-                        autocomplete="email"
-                        required
-                    >
+                    <input type="email" id="email" name="email" placeholder="Informe seu e-mail" autocomplete="email" required>
                 </div>
 
                 <div class="form-field">
                     <label for="password">Senha</label>
-                    <input
-                        type="password"
-                        id="password"
-                        name="password"
-                        placeholder="Informe sua senha"
-                        autocomplete="current-password"
-                        required
-                    >
+                    <input type="password" id="password" name="password" placeholder="Informe sua senha" autocomplete="current-password" required>
                 </div>
 
                 <button type="submit">Entrar</button>
@@ -82,4 +67,5 @@ $registerSuccess = $registerSuccess ?? null;
         </section>
     </main>
 </body>
+
 </html>
