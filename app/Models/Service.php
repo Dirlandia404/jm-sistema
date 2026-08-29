@@ -14,24 +14,24 @@ class Service{
 
     public function findAll(): array{
         //retorna todo os serviçoes alocados ao funcionario
-       $sql = '
-                SELECT
-                    service.id_service,
-                    service.description,
-                    service.price,
-                    service.created_at,
-                    service.finished_at,
-                    CASE
-                        WHEN service.finished_at IS NULL
-                            THEN "Pendente"
-                        ELSE "Finalizado"
-                    END AS status,
-                    user.name AS user_name
-                FROM service
-                INNER JOIN user
-                    ON user.id_user = service.user_id_user
-                ORDER BY service.created_at DESC
-            ';
+        $sql = '
+            SELECT
+                service.id_service,
+                service.description,
+                service.price,
+                service.created_at,
+                service.finished_at,
+                CASE
+                    WHEN service.finished_at IS NULL
+                        THEN "Pendente"
+                    ELSE "Finalizado"
+                END AS status,
+                user.name AS user_name
+            FROM service
+            INNER JOIN user
+                ON user.id_user = service.user_id_user
+            ORDER BY service.created_at DESC
+        ';
 
         $stmt = $this->connection->prepare($sql);
         $stmt->execute();
@@ -62,6 +62,61 @@ class Service{
         $stmt->bindValue(':description', $description, PDO::PARAM_STR);
         $stmt->bindValue(':price', $price, PDO::PARAM_STR);
         $stmt->bindValue(':user_id_user', $userId, PDO::PARAM_INT);
+        return $stmt->execute();
+    }
+
+    //Busca serviço por ID
+    public function findById(int $serviceId): ?array{
+        $sql = '
+            SELECT
+                service.id_service,
+                service.description,
+                service.price
+            FROM service
+            WHERE service.id_service = :service_id
+        ';
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(':service_id', $serviceId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        $service = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return $service ?: null;
+    }
+    //atualiza dados do serviço
+    public function update(
+        int $serviceId,
+        string $description,
+        string $price
+    ): bool {
+        $sql = '
+            UPDATE service
+            SET
+                description = :description,
+                price = :price
+            WHERE id_service = :service_id
+        ';
+
+        $stmt = $this->connection->prepare($sql);
+
+        $stmt->bindValue(
+            ':description',
+            $description,
+            PDO::PARAM_STR
+        );
+
+        $stmt->bindValue(
+            ':price',
+            $price,
+            PDO::PARAM_STR
+        );
+
+        $stmt->bindValue(
+            ':service_id',
+            $serviceId,
+            PDO::PARAM_INT
+        );
+
         return $stmt->execute();
     }
 }

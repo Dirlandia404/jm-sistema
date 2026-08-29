@@ -73,6 +73,23 @@ if($route === 'service-store' && $_SERVER['REQUEST_METHOD'] === 'POST'){
     $serviceController->store();
     exit;
 }
+//exibir formulario de edição
+if($route === "service-edit"){
+    $serviceId = (int) ($_GET['id'] ?? 0);
+    $serviceController->edit($serviceId);
+    exit;
+}
+//salvar alteração
+if ($route === 'service-update') {
+    // Aceita somente o envio pelo formulário.
+    if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+
+    $serviceController->update();
+    exit;
+}
 //exibir tela de dashboard
 if($route === "dashboard"){
     if(!isset($_SESSION['user'])){

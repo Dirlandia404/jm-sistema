@@ -6,7 +6,7 @@ namespace App\Controllers;
 
 use App\Models\Service;
 
-//controlaas ações relacionadas aos serviçoes
+//controla as ações relacionadas aos serviçoes
 class ServiceController{
    private Service $serviceModel;
    
@@ -28,7 +28,7 @@ class ServiceController{
     public function store(): void{
         //verifica usuario logado
         if(!isset($_SESSION["user"])){
-            header("Location: /login");
+            header('Location: index.php?route=login');
             exit;
         }
         //recebe os dados do formulario
@@ -55,6 +55,88 @@ class ServiceController{
         }else{
             $_SESSION['service_error'] = 'Não foi possivel cadastrar o serviço';
         }
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+    //exibe formulario de edição de serviço
+    public function edit(int $serviceId): void{
+        if(!isset($_SESSION["user"])){
+            header('Location: index.php?route=login');
+            exit;
+        }
+
+        $service = $this->serviceModel->findById($serviceId);
+
+        if($service === null){
+            $_SESSION['service_error'] = 'Serviço não encontrado';
+            header('Location: index.php?route=dashboard');
+            exit;
+        }
+
+            require __DIR__ . '/../Views/services/edit.php';
+    }
+    // Processa a alteração do serviço.
+    public function update(): void
+    {
+        // Verifica se o usuário está logado.
+        if (!isset($_SESSION['user'])) {
+            header('Location: index.php?route=login');
+            exit;
+        }
+
+        // Recebe os dados do formulário.
+        $serviceId = (int) ($_POST['service_id'] ?? 0);
+        $description = trim(
+            (string) ($_POST['description'] ?? '')
+        );
+        $price = trim(
+            (string) ($_POST['price'] ?? '')
+        );
+
+        $price = str_replace(',', '.', $price);
+
+        // Valida os dados.
+        if (
+            $serviceId <= 0
+            || $description === ''
+            || !is_numeric($price)
+            || (float) $price <= 0
+        ) {
+            $_SESSION['service_error'] =
+                'Não foi possível alterar o serviço.';
+
+            header('Location: index.php?route=dashboard');
+            exit;
+        }
+
+        // Verifica se o serviço existe.
+        if ($this->serviceModel->findById($serviceId) === null) {
+            $_SESSION['service_error'] =
+                'Serviço não encontrado.';
+
+            header('Location: index.php?route=dashboard');
+            exit;
+        }
+
+        try {
+            $updated = $this->serviceModel->update(
+                $serviceId,
+                $description,
+                $price
+            );
+        } catch (\PDOException $exception) {
+            error_log($exception->getMessage());
+            $updated = false;
+        }
+
+        if ($updated) {
+            $_SESSION['service_success'] =
+                'Serviço alterado com sucesso.';
+        } else {
+            $_SESSION['service_error'] =
+                'Não foi possível alterar o serviço.';
+        }
+
         header('Location: index.php?route=dashboard');
         exit;
     }

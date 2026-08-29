@@ -66,6 +66,7 @@ declare(strict_types=1);
                     <th>Valor</th>
                     <th>Status</th>
                     <th>Funcionário</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
 
@@ -107,6 +108,13 @@ declare(strict_types=1);
                                 ENT_QUOTES,
                                 'UTF-8'
                             ) ?>
+                        </td>
+                        <td>
+                            <a
+                                href="index.php?route=service-edit&id=<?=(int) $service['id_service']?>"
+                            >
+                                Alterar
+                            </a>
                         </td>
                     </tr>
                 <?php endforeach; ?>
