@@ -4,48 +4,54 @@ declare(strict_types=1);
 namespace App\Models;
 use PDO;
 
-class User{
+class User
+{
     //conexão PDO recebida da classe Database
     private PDO $connection;
 
-    public function __construct(PDO $connection){
+    public function __construct(PDO $connection)
+    {
         $this->connection = $connection;
     }
 
     //busca usuario ativo pelo email, considera apenas usuario ativo e retorna array de dados do usuario
-    public function  findbyEmail(string $email): ?array{
-        $sql = 'SELECT id_user, name, email, password, ativo FROM user WHERE email = :email AND ativo = 1 LIMIT 1';
+    public function findbyEmail(string $email): ?array
+    {
+        $sql =
+            "SELECT id_user, name, email, password, ativo FROM user WHERE email = :email AND ativo = 1 LIMIT 1";
 
         //prepara consulta
         $stmt = $this->connection->prepare($sql);
         //bind email
-        $stmt->bindValue(':email', $email);
+        $stmt->bindValue(":email", $email);
         //executa
         $stmt->execute();
-        //busca o usuario 
+        //busca o usuario
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
         //retorna array
         return $user === false ? null : $user;
     }
 
     //Verifica se o email ja esta cadastrado
-public function emailExists(string $email): bool{
-    $sql = '
+    public function emailExists(string $email): bool
+    {
+        $sql = '
         SELECT COUNT(*)
         FROM user
         WHERE email = :email
     ';
 
-    $stmt = $this->connection->prepare($sql);
-    $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-    $stmt->execute();
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(":email", $email, PDO::PARAM_STR);
+        $stmt->execute();
 
-    return (int) $stmt->fetchColumn() > 0;
-}
+        return (int) $stmt->fetchColumn() > 0;
+    }
 
-//Cadastra um novo usuario ativo
-public function create(string $name, string $email, string $password): bool{
-    $sql = '
+    //Cadastra um novo usuario ativo
+    public function create(string $name, string $email, string $password): bool
+    {
+        $sql = '
         INSERT INTO user (
             name,
             email,
@@ -59,12 +65,11 @@ public function create(string $name, string $email, string $password): bool{
         )
     ';
 
-    $stmt = $this->connection->prepare($sql);
-    $stmt->bindValue(':name', $name, PDO::PARAM_STR);
-    $stmt->bindValue(':email', $email, PDO::PARAM_STR);
-    $stmt->bindValue(':password', $password, PDO::PARAM_STR);
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(":name", $name, PDO::PARAM_STR);
+        $stmt->bindValue(":email", $email, PDO::PARAM_STR);
+        $stmt->bindValue(":password", $password, PDO::PARAM_STR);
 
-    return $stmt->execute();
-}
-
+        return $stmt->execute();
+    }
 }
