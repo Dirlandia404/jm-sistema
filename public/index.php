@@ -174,7 +174,78 @@ if($route === "dashboard"){
     $loggedUser = $_SESSION['user'];
     $userId = (int) $loggedUser['id_user'];
 
-    $services = $serviceModel->findAll();
+    $startDate = trim(
+        (string) ($_GET['start_date'] ?? '')
+    );
+
+    $endDate = trim(
+        (string) ($_GET['end_date'] ?? '')
+    );
+
+    $serviceName = trim(
+        (string) ($_GET['service_name'] ?? '')
+    );
+    $userName = trim(
+        (string) ($_GET['user_name'] ?? '')
+    );
+
+    $status = trim(
+        (string) ($_GET['status'] ?? '')
+    );
+
+    $allowedStatuses = [
+        '',
+        'pendente',
+        'finalizado'
+    ];
+
+    if(!in_array($status, $allowedStatuses, true)){
+        $_SESSION['service_error'] =
+            'Status informado é inválido.';
+
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+
+    $isValidDate = static function(string $date): bool{
+        if($date === ''){
+            return true;
+        }
+
+        $parsedDate = \DateTime::createFromFormat(
+            '!Y-m-d',
+            $date
+        );
+
+        return $parsedDate !== false
+            && $parsedDate->format('Y-m-d') === $date;
+    };
+
+    if(
+        !$isValidDate($startDate)
+        || !$isValidDate($endDate)
+        || (
+            $startDate !== ''
+            && $endDate !== ''
+            && $startDate > $endDate
+        )
+    ){
+        $_SESSION['service_error'] =
+            'Período informado é inválido.';
+
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+
+    $filters = [
+        'start_date' => $startDate,
+        'end_date' => $endDate,
+        'service_name' => $serviceName,
+        'user_name' => $userName,
+        'status' => $status
+    ];
+
+    $services = $serviceModel->findAll($filters);
     $totalServices = $serviceModel->getTotalByUserId(
         $userId
     );

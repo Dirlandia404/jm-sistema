@@ -23,7 +23,7 @@ class ServiceController{
    public function create(): void{
     //verifica se o usuario esta logado
     if(!isset($_SESSION["user"])){
-        header("Location: /login");
+        header('Location: index.php?route=login');
         exit;
     }
 

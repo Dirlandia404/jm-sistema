@@ -12,8 +12,8 @@ class Service{
         $this->connection = $connection;
     }
 
-    public function findAll(): array{
-        //retorna todo os serviçoes alocados ao funcionario
+    public function findAll(array $filters = []): array{
+        //Retorna os serviços e aplica os filtros informados
         $sql = '
             SELECT
                 service.id_service,
@@ -30,10 +30,80 @@ class Service{
             FROM service
             INNER JOIN user
                 ON user.id_user = service.user_id_user
-            ORDER BY service.created_at DESC
         ';
 
+        $conditions = [];
+
+        if(!empty($filters['start_date'])){
+            $conditions[] =
+                'DATE(service.created_at) >= :start_date';
+        }
+
+        if(!empty($filters['end_date'])){
+            $conditions[] =
+                'DATE(service.created_at) <= :end_date';
+        }
+        if(!empty($filters['service_name'])){
+            $conditions[] =
+                'service.description LIKE :service_name';
+        }
+
+        if(!empty($filters['user_name'])){
+            $conditions[] =
+                'user.name LIKE :user_name';
+        }
+
+        if(($filters['status'] ?? '') === 'pendente'){
+            $conditions[] =
+                'service.finished_at IS NULL';
+        }
+
+        if(($filters['status'] ?? '') === 'finalizado'){
+            $conditions[] =
+                'service.finished_at IS NOT NULL';
+        }
+
+        if($conditions !== []){
+            $sql .= ' WHERE ' . implode(
+                ' AND ',
+                $conditions
+            );
+        }
+
+        $sql .= ' ORDER BY service.created_at DESC';
+
         $stmt = $this->connection->prepare($sql);
+
+        if(!empty($filters['start_date'])){
+            $stmt->bindValue(
+                ':start_date',
+                $filters['start_date'],
+                PDO::PARAM_STR
+            );
+        }
+
+        if(!empty($filters['end_date'])){
+            $stmt->bindValue(
+                ':end_date',
+                $filters['end_date'],
+                PDO::PARAM_STR
+            );
+        }
+        if(!empty($filters['service_name'])){
+            $stmt->bindValue(
+                ':service_name',
+                '%' . $filters['service_name'] . '%',
+                PDO::PARAM_STR
+            );
+        }
+        if(!empty($filters['user_name'])){
+            $stmt->bindValue(
+                ':user_name',
+                '%' . $filters['user_name'] . '%',
+                PDO::PARAM_STR
+            );
+        }
+
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -175,10 +245,7 @@ class Service{
         return $stmt->execute();
     }
     //Grava a finalização e a comissão do serviço
-    public function finish(
-        int $serviceId,
-        float $commission
-    ): bool{
+    public function finish(int $serviceId, float $commission): bool{
         $sql = '
             UPDATE service
             SET

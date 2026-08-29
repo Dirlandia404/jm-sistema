@@ -96,7 +96,128 @@ declare(strict_types=1);
             <?php endforeach; ?>
         </ul>
     <?php endif; ?>
+    <!-- Filtra os serviços por nome e período. -->
+    <form action="index.php" method="GET">
+        <input
+            type="hidden"
+            name="route"
+            value="dashboard"
+        >
+        <div>
+            <label for="service_name">
+                Nome do serviço
+            </label>
+            <div>
+                <label for="user_name">
+                    Nome do funcionário
+                </label>
 
+                <input
+                    type="search"
+                    id="user_name"
+                    name="user_name"
+                    placeholder="Buscar pelo funcionário"
+                    maxlength="150"
+                    value="<?= htmlspecialchars(
+                        $filters['user_name'] ?? '',
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>"
+                >
+            </div>
+            <div>
+                <label for="status">
+                    Status
+                </label>
+
+                <select
+                    id="status"
+                    name="status"
+                >
+                    <option
+                        value=""
+                        <?= ($filters['status'] ?? '') === ''
+                            ? 'selected'
+                            : '' ?>
+                    >
+                        Todos
+                    </option>
+
+                    <option
+                        value="pendente"
+                        <?= ($filters['status'] ?? '') === 'pendente'
+                            ? 'selected'
+                            : '' ?>
+                    >
+                        Pendente
+                    </option>
+
+                    <option
+                        value="finalizado"
+                        <?= ($filters['status'] ?? '') === 'finalizado'
+                            ? 'selected'
+                            : '' ?>
+                    >
+                        Finalizado
+                    </option>
+                </select>
+            </div>
+
+            <input
+                type="search"
+                id="service_name"
+                name="service_name"
+                placeholder="Buscar pela descrição"
+                maxlength="45"
+                value="<?= htmlspecialchars(
+                    $filters['service_name'] ?? '',
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>"
+            >
+        </div>
+        <div>
+            <label for="start_date">
+                Data inicial
+            </label>
+
+            <input
+                type="date"
+                id="start_date"
+                name="start_date"
+                value="<?= htmlspecialchars(
+                    $filters['start_date'] ?? '',
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>"
+            >
+        </div>
+
+        <div>
+            <label for="end_date">
+                Data final
+            </label>
+
+            <input
+                type="date"
+                id="end_date"
+                name="end_date"
+                value="<?= htmlspecialchars(
+                    $filters['end_date'] ?? '',
+                    ENT_QUOTES,
+                    'UTF-8'
+                ) ?>"
+            >
+        </div>
+
+        <button type="submit">
+            Filtrar
+        </button>
+
+        <a href="index.php?route=dashboard">
+            Limpar filtros
+        </a>
+    </form>
     <h2>Serviços</h2>
 
     <?php if ($services === []): ?>
