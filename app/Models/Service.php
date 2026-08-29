@@ -38,6 +38,27 @@ class Service{
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    //Calcula o valor total dos serviços do usuario
+    public function getTotalByUserId(int $userId): float{
+        $sql = '
+            SELECT
+                COALESCE(SUM(service.price), 0) AS total
+            FROM service
+            WHERE service.user_id_user = :user_id_user
+        ';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(
+            ':user_id_user',
+            $userId,
+            PDO::PARAM_INT
+        );
+        $stmt->execute();
+
+        $result = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        return (float) $result['total'];
+    }
     //cadastra um novo serviço para o usuario logado
     public function create(string $description, string $price, int $userId): bool{
         $sql = '

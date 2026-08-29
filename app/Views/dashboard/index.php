@@ -50,6 +50,19 @@ declare(strict_types=1);
 
     <!-- Exibe a data atual exigida no enunciado. -->
     <p>Data atual: <?= date('d/m/Y') ?></p>
+    <!-- Exibe o valor total dos serviços do usuário logado. -->
+    <h2>Valor total dos seus serviços</h2>
+
+    <p>
+        <strong>
+            R$ <?= number_format(
+                $totalServices,
+                2,
+                ',',
+                '.'
+            ) ?>
+        </strong>
+    </p>
 
     <h2>Serviços</h2>
 

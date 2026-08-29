@@ -106,17 +106,27 @@ if($route === "dashboard"){
         exit;
     }
     $loggedUser = $_SESSION['user'];
-    $services = $serviceModel->findAll();
+    $userId = (int) $loggedUser['id_user'];
 
-    $serviceSuccess = $_SESSION['service_success'] ?? null;
-    $serviceError = $_SESSION['service_error'] ?? null;
+    $services = $serviceModel->findAll();
+    $totalServices = $serviceModel->getTotalByUserId(
+        $userId
+    );
+
+    $serviceSuccess =
+        $_SESSION['service_success'] ?? null;
+
+    $serviceError =
+        $_SESSION['service_error'] ?? null;
 
     unset(
         $_SESSION['service_success'],
         $_SESSION['service_error']
     );
 
-    require __DIR__ . '/../app/Views/dashboard/index.php';
+    require __DIR__
+        . '/../app/Views/dashboard/index.php';
+
     exit;
 }
 //exibir tela de logout
