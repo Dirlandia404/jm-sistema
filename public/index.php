@@ -45,10 +45,63 @@ $route = $_GET['route'] ?? 'login';
 //exibir tela de login
 if($route === "login"){
     $error = $_SESSION['login_error'] ?? null;
-    unset($_SESSION['login_error']);
+
+    $registerSuccess =
+        $_SESSION['register_success'] ?? null;
+
+    unset(
+        $_SESSION['login_error'],
+        $_SESSION['register_success']
+    );
+
     require __DIR__ . '/../app/Views/auth/login.php';
     exit;
 }
+//Exibe formulario de cadastro de usuario
+if($route === "user-create"){
+    $registerError =
+        $_SESSION['register_error'] ?? null;
+
+    unset($_SESSION['register_error']);
+
+    require __DIR__
+        . '/../app/Views/auth/register.php';
+
+    exit;
+}
+
+//Processa cadastro de usuario
+if($route === 'user-store' && $_SERVER['REQUEST_METHOD'] === 'POST'){
+    $name = (string) ($_POST['name'] ?? '');
+    $email = (string) ($_POST['email'] ?? '');
+    $password = (string) ($_POST['password'] ?? '');
+
+    try {
+        $registered = $authController->register(
+            $name,
+            $email,
+            $password
+        );
+    } catch (\PDOException $exception) {
+        error_log($exception->getMessage());
+        $registered = false;
+    }
+
+    if($registered){
+        $_SESSION['register_success'] =
+            'Cadastro realizado com sucesso. Faça seu login.';
+
+        header('Location: index.php?route=login');
+        exit;
+    }
+
+    $_SESSION['register_error'] =
+        'Não foi possível realizar o cadastro. Verifique os dados informados.';
+
+    header('Location: index.php?route=user-create');
+    exit;
+}
+
 //processa autenticação
 if($route === 'authenticate' && $_SERVER['REQUEST_METHOD'] === 'POST'){
     $email = (string) ($_POST['email'] ?? '');

@@ -38,6 +38,31 @@ class AuthController{
         return true;
     }
 
+    //Valida e cadastra um novo usuario
+    public function register(string $name, string $email, string $password): bool{
+        $name = trim($name);
+        $email = trim($email);
+
+        if(
+            $name === ''
+            || $email === ''
+            || $password === ''
+            || filter_var($email, FILTER_VALIDATE_EMAIL) === false
+        ){
+            return false;
+        }
+
+        if($this->userModel->emailExists($email)){
+            return false;
+        }
+
+        return $this->userModel->create(
+            $name,
+            $email,
+            $password
+        );
+    }
+
     //encerra sessão
     public function logout(): void{
         $_SESSION = [];
