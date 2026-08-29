@@ -38,10 +38,11 @@ declare(strict_types=1);
             name="price"
             min="0.01"
             step="0.01"
-            value="<?= htmlspecialchars(
-                $service['price'],
-                ENT_QUOTES,
-                'UTF-8'
+            value="<?= number_format(
+                (float) $service['price'],
+                2,
+                '.',
+                ''
             ) ?>"
             required
         >

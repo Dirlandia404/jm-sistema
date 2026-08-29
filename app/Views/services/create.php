@@ -18,7 +18,7 @@ declare(strict_types=1);
     <h1>Cadastrar novo Serviço</h1>
 
     <form action="index.php?route=service-store" method="POST">
-        <label for="name">Descriçao:</label>
+        <label for="description">Descriçao:</label>
         <input 
             type="text" 
             name="description" 
