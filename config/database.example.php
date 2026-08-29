@@ -6,5 +6,5 @@ return [
     'database' => 'jm_sistema',
     'username' => 'user_name',
     'password' => 'user_senha',
-    'charset' => 'utf8mb4',
+    'charset' => 'utf8',
 ];
