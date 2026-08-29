@@ -118,12 +118,24 @@ class Service{
             SELECT
                 service.id_service,
                 service.description,
-                service.price
+                service.price,
+                service.finished_at,
+                service.commission_user,
+                service.user_id_user,
+                user.name AS user_name,
+                user.email AS user_email
             FROM service
+            INNER JOIN user
+                ON user.id_user = service.user_id_user
             WHERE service.id_service = :service_id
         ';
+
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(':service_id', $serviceId, PDO::PARAM_INT);
+        $stmt->bindValue(
+            ':service_id',
+            $serviceId,
+            PDO::PARAM_INT
+        );
         $stmt->execute();
 
         $service = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -162,7 +174,29 @@ class Service{
 
         return $stmt->execute();
     }
-    //exclui um serviço pelo ID
+    //Grava a finalização e a comissão do serviço
+    public function finish(
+        int $serviceId,
+        float $commission
+    ): bool{
+        $sql = '
+            UPDATE service
+            SET
+                finished_at = NOW(),
+                commission_user = :commission_user,
+                update_at = NOW()
+            WHERE id_service = :service_id
+                AND finished_at IS NULL
+        ';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(':commission_user', number_format($commission, 3, '.', ''), PDO::PARAM_STR);
+        $stmt->bindValue(':service_id', $serviceId, PDO::PARAM_INT);
+        $stmt->execute();
+
+        return $stmt->rowCount() === 1;
+    }
+        //exclui um serviço pelo ID
     public function delete(int $serviceId): bool{
         $sql='
             DELETE FROM service

@@ -5,15 +5,21 @@ declare(strict_types=1);
 namespace App\Controllers;  
 
 use App\Models\Service;
+use App\Services\EmailService;
 
 //controla as ações relacionadas aos serviçoes
 class ServiceController{
-   private Service $serviceModel;
-   
-   //recebe o Model de serviços
-   public function __construct(Service $serviceModel){
-       $this->serviceModel = $serviceModel;
-   }
+    private Service $serviceModel;
+    private EmailService $emailService;
+
+    //Recebe o Model e o serviço de email
+    public function __construct(
+        Service $serviceModel,
+        EmailService $emailService
+    ){
+        $this->serviceModel = $serviceModel;
+        $this->emailService = $emailService;
+    }
    public function create(): void{
     //verifica se o usuario esta logado
     if(!isset($_SESSION["user"])){
@@ -182,6 +188,101 @@ class ServiceController{
 
         header('Location: index.php?route=dashboard');
         exit;
+    }
+
+    //Processa a finalização do serviço
+    public function finish(): void{
+        if(!isset($_SESSION['user'])){
+            header('Location: index.php?route=login');
+            exit;
+        }
+
+        $serviceId = (int) ($_POST['service_id'] ?? 0);
+
+        if($serviceId <= 0){
+            $_SESSION['service_error'] =
+                'Serviço inválido.';
+
+            header('Location: index.php?route=dashboard');
+            exit;
+        }
+
+        $service = $this->serviceModel->findById(
+            $serviceId
+        );
+
+        if($service === null){
+            $_SESSION['service_error'] =
+                'Serviço não encontrado.';
+
+            header('Location: index.php?route=dashboard');
+            exit;
+        }
+
+        if($service['finished_at'] !== null){
+            $_SESSION['service_error'] =
+                'Este serviço já foi finalizado.';
+
+            header('Location: index.php?route=dashboard');
+            exit;
+        }
+
+        $commission = $this->calculateCommission(
+            (float) $service['price']
+        );
+
+        try {
+            $finished = $this->serviceModel->finish(
+                $serviceId,
+                $commission
+            );
+        } catch (\PDOException $exception) {
+            error_log($exception->getMessage());
+            $finished = false;
+        }
+
+        if($finished){
+            try {
+                $emailSent =
+                    $this->emailService->sendServiceFinished(
+                        (string) $service['user_email'],
+                        (string) $service['user_name'],
+                        (string) $service['description'],
+                        (float) $service['price'],
+                        $commission
+                    );
+            } catch (\Throwable $exception) {
+                error_log($exception->getMessage());
+                $emailSent = false;
+            }
+
+            if($emailSent){
+                $_SESSION['service_success'] =
+                    'Serviço finalizado e e-mail enviado com sucesso.';
+            } else {
+                $_SESSION['service_success'] =
+                    'Serviço finalizado, mas não foi possível enviar o e-mail.';
+            }
+        } else {
+            $_SESSION['service_error'] =
+                'Não foi possível finalizar o serviço.';
+        }
+
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+
+    //Calcula a comissão de acordo com o valor do serviço
+    private function calculateCommission(float $price): float{
+        if($price > 10000){
+            return round($price * 0.20, 3);
+        }
+
+        if($price > 1000){
+            return round($price * 0.10, 3);
+        }
+
+        return round($price * 0.05, 3);
     }
 }
 

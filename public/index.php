@@ -7,6 +7,7 @@ use App\Models\User;
 use App\Models\Service;
 use App\Controllers\AuthController;
 use App\Controllers\ServiceController;
+use App\Services\EmailService;
 
 //inicia sessão
 session_start();
@@ -16,6 +17,7 @@ require_once __DIR__ .'/../app/Models/User.php';
 require_once __DIR__ .'/../app/Models/Service.php';
 require_once __DIR__ .'/../app/Controllers/AuthController.php';
 require_once __DIR__ .'/../app/Controllers/ServiceController.php';
+require_once __DIR__ . '/../app/Services/EmailService.php';
 
 //carrega o arquivo de configuração do banco de dados
 $config = require __DIR__ . '/../config/database.php';
@@ -30,7 +32,8 @@ try {
     $serviceModel = new Service($connection);
     //cria o Controller recebendo o Model
     $authController = new AuthController($userModel);
-    $serviceController = new ServiceController($serviceModel);
+    $emailService = new EmailService();
+    $serviceController = new ServiceController($serviceModel, $emailService);
 
 } catch (\PDOException $exception) {
     error_log($exception->getMessage());    
@@ -133,6 +136,16 @@ if($route === 'service-delete'){
         exit;
     }
     $serviceController->delete();
+    exit;
+}
+//Processa finalização do serviço
+if($route === 'service-finish'){
+    if($_SERVER['REQUEST_METHOD'] !== 'POST'){
+        header('Location: index.php?route=dashboard');
+        exit;
+    }
+
+    $serviceController->finish();
     exit;
 }
 //exibir formulario de edição

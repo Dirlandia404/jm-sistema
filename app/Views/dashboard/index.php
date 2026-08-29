@@ -161,6 +161,23 @@ declare(strict_types=1);
                             >
                                 Alterar
                             </a>
+                            <?php if($service['finished_at'] === null): ?>
+                                <form
+                                    action="index.php?route=service-finish"
+                                    method="POST"
+                                    class="finish-service-form"
+                                >
+                                    <input
+                                        type="hidden"
+                                        name="service_id"
+                                        value="<?= (int) $service['id_service'] ?>"
+                                    >
+
+                                    <button type="submit">
+                                        Finalizar
+                                    </button>
+                                </form>
+                            <?php endif; ?>
 
                             <form
                                 action="index.php?route=service-delete"
