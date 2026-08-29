@@ -64,6 +64,39 @@ declare(strict_types=1);
         </strong>
     </p>
 
+    <!-- Exibe os últimos serviços pendentes do usuário. -->
+    <h2>Últimos serviços pendentes</h2>
+
+    <?php if ($pendingServices === []): ?>
+        <p>Você não possui serviços pendentes.</p>
+    <?php else: ?>
+        <ul>
+            <?php foreach ($pendingServices as $pendingService): ?>
+                <li>
+                    <strong>
+                        <?= htmlspecialchars(
+                            $pendingService['description'],
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>
+                    </strong>
+
+                    — R$ <?= number_format(
+                        (float) $pendingService['price'],
+                        2,
+                        ',',
+                        '.'
+                    ) ?>
+
+                    — <?= date(
+                        'd/m/Y',
+                        strtotime($pendingService['created_at'])
+                    ) ?>
+                </li>
+            <?php endforeach; ?>
+        </ul>
+    <?php endif; ?>
+
     <h2>Serviços</h2>
 
     <?php if ($services === []): ?>

@@ -59,6 +59,32 @@ class Service{
 
         return (float) $result['total'];
     }
+    //Busca os ultimos serviços pendentes do usuario
+    public function findLatestPendingByUserId(int $userId): array{
+        $sql = '
+            SELECT
+                service.id_service,
+                service.description,
+                service.price,
+                service.created_at
+            FROM service
+            WHERE service.user_id_user = :user_id_user
+                AND service.finished_at IS NULL
+            ORDER BY service.created_at DESC
+            LIMIT 5
+        ';
+
+        $stmt = $this->connection->prepare($sql);
+        $stmt->bindValue(
+            ':user_id_user',
+            $userId,
+            PDO::PARAM_INT
+        );
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+    
     //cadastra um novo serviço para o usuario logado
     public function create(string $description, string $price, int $userId): bool{
         $sql = '

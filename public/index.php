@@ -112,6 +112,10 @@ if($route === "dashboard"){
     $totalServices = $serviceModel->getTotalByUserId(
         $userId
     );
+    $pendingServices =
+        $serviceModel->findLatestPendingByUserId(
+            $userId
+        );
 
     $serviceSuccess =
         $_SESSION['service_success'] ?? null;
