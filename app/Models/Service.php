@@ -14,9 +14,9 @@ class Service
         $this->connection = $connection;
     }
 
+    //Busca todos os serviços
     public function findAll(array $filters = []): array
     {
-        //Retorna os serviços e aplica os filtros informados
         $sql = '
             SELECT
                 service.id_service,
@@ -117,7 +117,7 @@ class Service
         return (float) $result["total"];
     }
 
-    //Busca os quatro últimos serviços cadastrados
+    //Busca os quatro últimos serviços cadastrados -- selecionei  4 para ficar uma melhor visualização, não foi pedido nos requisitos
     public function findLatest(): array
     {
         $sql = '
@@ -145,18 +145,18 @@ class Service
     public function findLatestPendingByUserId(int $userId): array
     {
         $sql = '
-        SELECT
-            service.id_service,
-            service.description,
-            service.price,
-            service.created_at
-        FROM service
-        WHERE service.user_id_user = :user_id_user
-            AND service.finished_at IS NULL
-        ORDER BY
-            service.created_at DESC,
-            service.id_service DESC
-    ';
+            SELECT
+                service.id_service,
+                service.description,
+                service.price,
+                service.created_at
+            FROM service
+            WHERE service.user_id_user = :user_id_user
+                AND service.finished_at IS NULL
+            ORDER BY
+                service.created_at DESC,
+                service.id_service DESC
+        ';
 
         $stmt = $this->connection->prepare($sql);
 
@@ -170,7 +170,7 @@ class Service
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
-    //cadastra um novo serviço para o usuario logado
+    //Cadastra um novo serviço para o usuario logado
     public function create(
         string $description,
         string $price,
@@ -228,7 +228,7 @@ class Service
 
         return $service ?: null;
     }
-    //atualiza dados do serviço
+    //Atualiza dados do serviço
     public function update(
         int $serviceId,
         string $description,
@@ -243,11 +243,8 @@ class Service
         ';
 
         $stmt = $this->connection->prepare($sql);
-
         $stmt->bindValue(":description", $description, PDO::PARAM_STR);
-
         $stmt->bindValue(":price", $price, PDO::PARAM_STR);
-
         $stmt->bindValue(":service_id", $serviceId, PDO::PARAM_INT);
 
         return $stmt->execute();
@@ -276,7 +273,7 @@ class Service
 
         return $stmt->rowCount() === 1;
     }
-    //exclui um serviço pelo ID
+    //Exclui um serviço pelo ID
     public function delete(int $serviceId): bool
     {
         $sql = '

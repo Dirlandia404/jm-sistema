@@ -5,7 +5,7 @@ namespace App\Controllers;
 
 use App\Models\User;
 
-//controle de fluxo de autenticação do usuario
+//Controle de fluxo de autenticação do usuario
 class AuthController
 {
     private User $userModel;
@@ -14,7 +14,7 @@ class AuthController
     {
         $this->userModel = $userModel;
     }
-    //verifica as credenciais e inicia  sessão
+    //Verifica as credenciais e inicia  sessão
     public function login(string $email, string $password): bool
     {
         $email = trim($email);
@@ -35,7 +35,6 @@ class AuthController
             return false;
         }
 
-        //Guarda os dados sem a senha
         $_SESSION["user"] = [
             "id_user" => $user["id_user"],
             "name" => $user["name"],

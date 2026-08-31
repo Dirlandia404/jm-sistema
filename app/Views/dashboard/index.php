@@ -101,7 +101,6 @@ declare(strict_types=1);
             <?php endif; ?>
 
             <section class="summary-grid">
-                <!-- Últimos serviços cadastrados. -->
                 <article class="summary-card">
                     <div class="summary-card-header">
                         <div>
@@ -167,15 +166,12 @@ declare(strict_types=1);
                         </ul>
                     <?php endif; ?>
                 </article>
-
-                <!-- Serviços pendentes do usuário logado. -->
                 <article class="summary-card">
                     <div class="summary-card-header">
                         <div>
                             <p class="summary-label">
                                 Acompanhamento
                             </p>
-
                             <h2>Serviços pendentes</h2>
                         </div>
 
@@ -212,7 +208,6 @@ declare(strict_types=1);
                                             ) ?>
                                         </span>
                                     </div>
-
                                     <strong>
                                         R$ <?= number_format(
                                             (float) $pendingService['price'],

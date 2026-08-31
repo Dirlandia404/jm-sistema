@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-// Recebe a mensagem de erro preparada pelo index.php.
 $error = $error ?? null;
 $registerSuccess = $registerSuccess ?? null;
 ?>
@@ -37,13 +36,11 @@ $registerSuccess = $registerSuccess ?? null;
                 </p>
             <?php endif; ?>
             <?php if ($error !== null): ?>
-                <!-- Exibe o erro de autenticação. -->
                 <p class="login-error">
                     <?= htmlspecialchars($error, ENT_QUOTES, 'UTF-8') ?>
                 </p>
             <?php endif; ?>
 
-            <!-- Envia as credenciais para a rota de autenticação. -->
             <form action="index.php?route=authenticate" method="POST" class="login-form">
                 <div class="form-field">
                     <label for="email">E-mail</label>
@@ -59,7 +56,6 @@ $registerSuccess = $registerSuccess ?? null;
             </form>
             <p class="login-link">
                 Ainda não possui cadastro?
-
                 <a href="index.php?route=user-create">
                     Cadastre-se
                 </a>

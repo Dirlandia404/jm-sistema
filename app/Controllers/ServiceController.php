@@ -7,7 +7,7 @@ namespace App\Controllers;
 use App\Models\Service;
 use App\Services\EmailService;
 
-//controla as ações relacionadas aos serviçoes
+//Controla as ações relacionadas aos serviçoes
 class ServiceController
 {
     private Service $serviceModel;
@@ -21,31 +21,27 @@ class ServiceController
         $this->serviceModel = $serviceModel;
         $this->emailService = $emailService;
     }
+    //Exibe a tela de cadastro de serviço
     public function create(): void
     {
-        //verifica se o usuario esta logado
         if (!isset($_SESSION["user"])) {
             header("Location: index.php?route=login");
             exit();
         }
 
-        //carrega a tela de cadastro de serviço
         require __DIR__ . "/../Views/services/create.php";
     }
-    //processa o cadastro de serviço
+    //Processa o cadastro de serviço
     public function store(): void
     {
-        //verifica usuario logado
         if (!isset($_SESSION["user"])) {
             header("Location: index.php?route=login");
             exit();
         }
-        //recebe os dados do formulario
         $description = trim((string) ($_POST["description"] ?? ""));
         $price = trim((string) ($_POST["price"] ?? ""));
         $price = str_replace(",", ".", $price);
 
-        //valida campos obrigatorios
         if ($description === "" || !is_numeric($price) || (float) $price <= 0) {
             $_SESSION["service_error"] = "Não foi possivel cadastrar serviço";
             header("Location: index.php?route=dashboard");
@@ -70,7 +66,7 @@ class ServiceController
         header("Location: index.php?route=dashboard");
         exit();
     }
-    //exibe formulario de edição de serviço
+    //Exibe formulario de edição de serviço
     public function edit(int $serviceId): void
     {
         if (!isset($_SESSION["user"])) {
@@ -91,20 +87,17 @@ class ServiceController
     // Processa a alteração do serviço.
     public function update(): void
     {
-        // Verifica se o usuário está logado.
         if (!isset($_SESSION["user"])) {
             header("Location: index.php?route=login");
             exit();
         }
 
-        // Recebe os dados do formulário.
         $serviceId = (int) ($_POST["service_id"] ?? 0);
         $description = trim((string) ($_POST["description"] ?? ""));
         $price = trim((string) ($_POST["price"] ?? ""));
 
         $price = str_replace(",", ".", $price);
 
-        // Valida os dados.
         if (
             $serviceId <= 0 ||
             $description === "" ||
@@ -117,7 +110,6 @@ class ServiceController
             exit();
         }
 
-        // Verifica se o serviço existe.
         if ($this->serviceModel->findById($serviceId) === null) {
             $_SESSION["service_error"] = "Serviço não encontrado.";
 
@@ -145,10 +137,9 @@ class ServiceController
         header("Location: index.php?route=dashboard");
         exit();
     }
-    //Procesa exclusão
+    //Processa a exclusão do serviço
     public function delete(): void
     {
-        // Verifica se o usuário está logado.
         if (!isset($_SESSION["user"])) {
             header("Location: index.php?route=login");
             exit();
@@ -161,7 +152,7 @@ class ServiceController
             header("Location: index.php?route=dashboard");
             exit();
         }
-        // Verifica se o serviço existe.
+
         if ($this->serviceModel->findById($serviceId) === null) {
             $_SESSION["service_error"] = "Serviço não encontrado.";
 

@@ -2,7 +2,6 @@
 
 declare(strict_types=1);
 
-// Recebe a mensagem de erro preparada pelo index.php.
 $error = $error ?? null;
 ?>
 
@@ -39,19 +38,16 @@ $error = $error ?? null;
             <form action="index.php?route=user-store" method="POST" class="login-form">
                 <div class="form-field">
                     <label for="name">Nome</label>
-
                     <input type="text" id="name" name="name" placeholder="Informe seu nome" maxlength="150" autocomplete="name" required>
                 </div>
 
                 <div class="form-field">
                     <label for="email">E-mail</label>
-
                     <input type="email" id="email" name="email" placeholder="Informe seu e-mail" maxlength="100" autocomplete="email" required>
                 </div>
 
                 <div class="form-field">
                     <label for="password">Senha</label>
-
                     <input type="password" id="password" name="password" placeholder="Informe sua senha" maxlength="45" autocomplete="new-password" required>
                 </div>
 
@@ -62,7 +58,6 @@ $error = $error ?? null;
 
             <p class="login-link">
                 Já possui cadastro?
-
                 <a href="index.php?route=login">
                     Entrar
                 </a>
