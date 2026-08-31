@@ -24,3 +24,15 @@ addFormConfirmation(
   ".finish-service-form",
   "Deseja realmente finalizar este serviço?",
 );
+
+const successAlerts = document.querySelectorAll(".alert-success");
+
+successAlerts.forEach(function (alert) {
+  window.setTimeout(function () {
+    alert.classList.add("alert-hiding");
+
+    window.setTimeout(function () {
+      alert.remove();
+    }, 250);
+  }, 4000);
+});

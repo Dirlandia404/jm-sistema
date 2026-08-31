@@ -46,11 +46,8 @@ class AuthController
     }
 
     //Valida e cadastra um novo usuario
-    public function register(
-        string $name,
-        string $email,
-        string $password,
-    ): bool {
+    public function register(string $name, string $email, string $password): bool
+    {
         $name = trim($name);
         $email = trim($email);
 
@@ -70,6 +67,110 @@ class AuthController
         return $this->userModel->create($name, $email, $password);
     }
 
+    //Exibe a tela de login
+    public function showLogin(): void
+    {
+        $error =
+            $_SESSION["login_error"] ?? null;
+
+        $registerSuccess =
+            $_SESSION["register_success"] ?? null;
+
+        unset(
+            $_SESSION["login_error"],
+            $_SESSION["register_success"]
+        );
+
+        require __DIR__
+            . "/../Views/auth/login.php";
+
+        exit();
+    }
+
+    //Exibe a tela de cadastro de usuário
+    public function showRegister(): void
+    {
+        $registerError =
+            $_SESSION["register_error"] ?? null;
+
+        unset($_SESSION["register_error"]);
+
+        require __DIR__
+            . "/../Views/auth/register.php";
+
+        exit();
+    }
+    //Processa o cadastro de usuário
+    public function storeRegistration(): void
+    {
+        $name =
+            (string) ($_POST["name"] ?? "");
+
+        $email =
+            (string) ($_POST["email"] ?? "");
+
+        $password =
+            (string) ($_POST["password"] ?? "");
+
+        try {
+            $registered = $this->register(
+                $name,
+                $email,
+                $password
+            );
+        } catch (\PDOException $exception) {
+            error_log($exception->getMessage());
+            $registered = false;
+        }
+
+        if ($registered) {
+            $_SESSION["register_success"] =
+                "Cadastro realizado com sucesso. "
+                . "Faça seu login.";
+
+            header(
+                "Location: index.php?route=login"
+            );
+
+            exit();
+        }
+
+        $_SESSION["register_error"] =
+            "Não foi possível realizar o cadastro. "
+            . "Verifique os dados informados.";
+
+        header(
+            "Location: index.php?route=user-create"
+        );
+
+        exit();
+    }
+    //Processa a autenticação
+    public function authenticate(): void
+    {
+        $email =
+            (string) ($_POST["email"] ?? "");
+
+        $password =
+            (string) ($_POST["password"] ?? "");
+
+        if ($this->login($email, $password)) {
+            header(
+                "Location: index.php?route=dashboard"
+            );
+
+            exit();
+        }
+
+        $_SESSION["login_error"] =
+            "Ops, Email ou Senha inválido";
+
+        header(
+            "Location: index.php?route=login"
+        );
+
+        exit();
+    }
     //encerra sessão
     public function logout(): void
     {

@@ -116,29 +116,60 @@ class Service
 
         return (float) $result["total"];
     }
-    //Busca os ultimos serviços pendentes do usuario
-    public function findLatestPendingByUserId(int $userId): array
+
+    //Busca os quatro últimos serviços cadastrados
+    public function findLatest(): array
     {
         $sql = '
-            SELECT
-                service.id_service,
-                service.description,
-                service.price,
-                service.created_at
-            FROM service
-            WHERE service.user_id_user = :user_id_user
-                AND service.finished_at IS NULL
-            ORDER BY service.created_at DESC
-            LIMIT 5
-        ';
+        SELECT
+            service.id_service,
+            service.description,
+            service.price,
+            service.created_at,
+            user.name AS user_name
+        FROM service
+        INNER JOIN user
+            ON user.id_user = service.user_id_user
+        ORDER BY
+            service.created_at DESC,
+            service.id_service DESC
+        LIMIT 4
+    ';
 
         $stmt = $this->connection->prepare($sql);
-        $stmt->bindValue(":user_id_user", $userId, PDO::PARAM_INT);
         $stmt->execute();
 
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
+    //Busca os serviços pendentes do usuário
+    public function findLatestPendingByUserId(int $userId): array
+    {
+        $sql = '
+        SELECT
+            service.id_service,
+            service.description,
+            service.price,
+            service.created_at
+        FROM service
+        WHERE service.user_id_user = :user_id_user
+            AND service.finished_at IS NULL
+        ORDER BY
+            service.created_at DESC,
+            service.id_service DESC
+    ';
 
+        $stmt = $this->connection->prepare($sql);
+
+        $stmt->bindValue(
+            ':user_id_user',
+            $userId,
+            PDO::PARAM_INT
+        );
+
+        $stmt->execute();
+
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
     //cadastra um novo serviço para o usuario logado
     public function create(
         string $description,

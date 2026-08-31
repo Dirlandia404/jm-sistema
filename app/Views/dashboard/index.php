@@ -12,250 +12,450 @@ declare(strict_types=1);
 
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
 
-    <title>Dashboard</title>
+    <title>Dashboard | JM Informática</title>
+
+    <link rel="stylesheet" href="assets/css/dashboard.css">
 </head>
 
 <body>
-    <h1>Dashboard</h1>
+    <div class="dashboard-layout">
+        <aside class="sidebar">
+            <div class="sidebar-profile">
+                <p>Logado como:</p>
 
-    <!-- Exibe os dados do usuário autenticado. -->
-    <p>
-        Usuário:
-        <?= htmlspecialchars(
-            $loggedUser['name'],
-            ENT_QUOTES,
-            'UTF-8'
-        ) ?>
-    </p>
+                <strong>
+                    <?= htmlspecialchars(
+                        $loggedUser['name'],
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </strong>
 
-    <p>
-        E-mail:
-        <?= htmlspecialchars(
-            $loggedUser['email'],
-            ENT_QUOTES,
-            'UTF-8'
-        ) ?>
-    </p>
+                <span>
+                    <?= htmlspecialchars(
+                        $loggedUser['email'],
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </span>
+                <div class="sidebar-total">
+                    <p>Valor total dos seus serviços</p>
 
-    <!--Cadastro novo serviço -->
-    <a href="index.php?route=service-create">Cadastrar novo serviço</a>
-    <?php if ($serviceSuccess): ?>
-        <p><?= htmlspecialchars($serviceSuccess) ?></p>
-    <?php endif; ?>
-
-    <?php if ($serviceError): ?>
-        <p><?= htmlspecialchars($serviceError) ?></p>
-    <?php endif; ?>
-
-    <!-- Exibe a data atual exigida no enunciado. -->
-    <p>Data atual: <?= date('d/m/Y') ?></p>
-    <!-- Exibe o valor total dos serviços do usuário logado. -->
-    <h2>Valor total dos seus serviços</h2>
-
-    <p>
-        <strong>
-            R$ <?= number_format(
-                $totalServices,
-                2,
-                ',',
-                '.'
-            ) ?>
-        </strong>
-    </p>
-
-    <!-- Exibe os últimos serviços pendentes do usuário. -->
-    <h2>Últimos serviços pendentes</h2>
-
-    <?php if ($pendingServices === []): ?>
-        <p>Você não possui serviços pendentes.</p>
-    <?php else: ?>
-        <ul>
-            <?php foreach ($pendingServices as $pendingService): ?>
-                <li>
                     <strong>
-                        <?= htmlspecialchars(
-                            $pendingService['description'],
-                            ENT_QUOTES,
-                            'UTF-8'
+                        R$
+                        <?= number_format(
+                            $totalServices,
+                            2,
+                            ',',
+                            '.'
                         ) ?>
                     </strong>
 
-                    — R$ <?= number_format(
-                        (float) $pendingService['price'],
-                        2,
-                        ',',
-                        '.'
-                    ) ?>
-
-                    — <?= date(
-                        'd/m/Y',
-                        strtotime($pendingService['created_at'])
-                    ) ?>
-                </li>
-            <?php endforeach; ?>
-        </ul>
-    <?php endif; ?>
-    <!-- Filtra os serviços por nome e período. -->
-    <form action="index.php" method="GET">
-        <input type="hidden" name="route" value="dashboard">
-        <div>
-            <label for="service_name">
-                Nome do serviço
-            </label>
-            <div>
-                <label for="user_name">
-                    Nome do funcionário
-                </label>
-
-                <input type="search" id="user_name" name="user_name" placeholder="Buscar pelo funcionário" maxlength="150" value="<?= htmlspecialchars(
-                    $filters['user_name'] ?? '',
-                    ENT_QUOTES,
-                    'UTF-8'
-                ) ?>">
-            </div>
-            <div>
-                <label for="status">
-                    Status
-                </label>
-
-                <select id="status" name="status">
-                    <option value="" <?= ($filters['status'] ?? '') === ''
-                        ? 'selected'
-                        : '' ?>> Todos </option>
-
-                    <option value="pendente" <?= ($filters['status'] ?? '') === 'pendente'
-                        ? 'selected'
-                        : '' ?>> Pendente </option>
-
-                    <option value="finalizado" <?= ($filters['status'] ?? '') === 'finalizado'
-                        ? 'selected'
-                        : '' ?>> Finalizado </option>
-                </select>
+                    <span>
+                        Serviços pendentes e finalizados
+                    </span>
+                </div>
             </div>
 
-            <input type="search" id="service_name" name="service_name" placeholder="Buscar pela descrição" maxlength="45" value="<?= htmlspecialchars(
-                $filters['service_name'] ?? '',
-                ENT_QUOTES,
-                'UTF-8'
-            ) ?>">
-        </div>
-        <div>
-            <label for="start_date">
-                Data inicial
-            </label>
+            <nav class="sidebar-navigation" aria-label="Navegação principal">
+                <a href="index.php?route=service-create">
+                    Cadastrar serviço
+                </a>
 
-            <input type="date" id="start_date" name="start_date" value="<?= htmlspecialchars(
-                $filters['start_date'] ?? '',
-                ENT_QUOTES,
-                'UTF-8'
-            ) ?>">
-        </div>
+                <a href="index.php?route=logout">
+                    Sair
+                </a>
+            </nav>
+        </aside>
 
-        <div>
-            <label for="end_date">
-                Data final
-            </label>
+        <main class="dashboard-main">
+            <header class="dashboard-header">
+                <div>
+                    <p>JM Informática</p>
+                    <h1>Dashboard</h1>
+                </div>
 
-            <input type="date" id="end_date" name="end_date" value="<?= htmlspecialchars(
-                $filters['end_date'] ?? '',
-                ENT_QUOTES,
-                'UTF-8'
-            ) ?>">
-        </div>
+                <time datetime="<?= date('Y-m-d') ?>">
+                    <?= date('d/m/Y') ?>
+                </time>
+            </header>
 
-        <button type="submit">
-            Filtrar
-        </button>
+            <?php if ($serviceSuccess): ?>
+                <p class="alert alert-success">
+                    <?= htmlspecialchars(
+                        $serviceSuccess,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </p>
+            <?php endif; ?>
 
-        <a href="index.php?route=dashboard">
-            Limpar filtros
-        </a>
-    </form>
-    <h2>Serviços</h2>
+            <?php if ($serviceError): ?>
+                <p class="alert alert-error">
+                    <?= htmlspecialchars(
+                        $serviceError,
+                        ENT_QUOTES,
+                        'UTF-8'
+                    ) ?>
+                </p>
+            <?php endif; ?>
 
-    <?php if ($services === []): ?>
-        <!-- Exibido quando não existem serviços cadastrados. -->
-        <p>Nenhum serviço encontrado.</p>
-    <?php else: ?>
-        <!-- Exibe os serviços retornados pelo Model. -->
-        <table border="1">
-            <thead>
-                <tr>
-                    <th>ID</th>
-                    <th>Descrição</th>
-                    <th>Valor</th>
-                    <th>Status</th>
-                    <th>Funcionário</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
+            <section class="summary-grid">
+                <!-- Últimos serviços cadastrados. -->
+                <article class="summary-card">
+                    <div class="summary-card-header">
+                        <div>
+                            <p class="summary-label">
+                                Acompanhamento
+                            </p>
 
-            <tbody>
-                <?php foreach ($services as $service): ?>
-                    <tr>
-                        <td>
-                            <?= (int) $service['id_service'] ?>
-                        </td>
+                            <h2>Últimos serviços</h2>
+                        </div>
 
-                        <td>
-                            <?= htmlspecialchars(
-                                $service['description'],
-                                ENT_QUOTES,
-                                'UTF-8'
-                            ) ?>
-                        </td>
+                        <span class="pending-count">
+                            <?= count($latestServices) ?>
+                        </span>
+                    </div>
 
-                        <td>
-                            R$ <?= number_format(
-                                (float) $service['price'],
-                                2,
-                                ',',
-                                '.'
-                            ) ?>
-                        </td>
+                    <?php if ($latestServices === []): ?>
+                        <p class="empty-message">
+                            Nenhum serviço cadastrado.
+                        </p>
+                    <?php else: ?>
+                        <ul class="summary-list">
+                            <?php foreach ($latestServices as $latestService): ?>
+                                <li>
+                                    <div>
+                                        <strong>
+                                            <?= (int) $latestService['id_service'] ?>
+                                            -
+                                            <?= htmlspecialchars(
+                                                $latestService['description'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </strong>
 
-                        <td>
-                            <?= htmlspecialchars(
-                                $service['status'],
-                                ENT_QUOTES,
-                                'UTF-8'
-                            ) ?>
-                        </td>
+                                        <span>
+                                            <?= htmlspecialchars(
+                                                $latestService['user_name'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
 
-                        <td>
-                            <?= htmlspecialchars(
-                                $service['user_name'],
-                                ENT_QUOTES,
-                                'UTF-8'
-                            ) ?>
-                        </td>
-                        <td>
-                            <a href="index.php?route=service-edit&id=<?= (int) $service['id_service'] ?>">
-                                Alterar
-                            </a>
-                            <?php if ($service['finished_at'] === null): ?>
-                                <form action="index.php?route=service-finish" method="POST" class="finish-service-form">
-                                    <input type="hidden" name="service_id" value="<?= (int) $service['id_service'] ?>">
+                                            ·
 
-                                    <button type="submit">
-                                        Finalizar
-                                    </button>
-                                </form>
-                            <?php endif; ?>
+                                            <?= date(
+                                                'd/m/Y',
+                                                strtotime(
+                                                    $latestService['created_at']
+                                                )
+                                            ) ?>
+                                        </span>
+                                    </div>
 
-                            <form action="index.php?route=service-delete" method="POST" class="delete-service-form">
-                                <input type="hidden" name="service_id" value="<?= (int) $service['id_service'] ?>">
+                                    <strong>
+                                        R$ <?= number_format(
+                                            (float) $latestService['price'],
+                                            2,
+                                            ',',
+                                            '.'
+                                        ) ?>
+                                    </strong>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </article>
 
-                                <button type="submit">
-                                    Excluir
-                                </button>
-                            </form>
-                        </td>
-                    </tr>
-                <?php endforeach; ?>
-            </tbody>
-        </table>
-    <?php endif; ?>
+                <!-- Serviços pendentes do usuário logado. -->
+                <article class="summary-card">
+                    <div class="summary-card-header">
+                        <div>
+                            <p class="summary-label">
+                                Acompanhamento
+                            </p>
+
+                            <h2>Serviços pendentes</h2>
+                        </div>
+
+                        <span class="pending-count">
+                            <?= count($pendingServices) ?>
+                        </span>
+                    </div>
+
+                    <?php if ($pendingServices === []): ?>
+                        <p class="empty-message">
+                            Você não possui serviços pendentes.
+                        </p>
+                    <?php else: ?>
+                        <ul class="summary-list pending-list">
+                            <?php foreach ($pendingServices as $pendingService): ?>
+                                <li>
+                                    <div>
+                                        <strong>
+                                            <?= (int) $pendingService['id_service'] ?>
+                                            -
+                                            <?= htmlspecialchars(
+                                                $pendingService['description'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </strong>
+
+                                        <span>
+                                            <?= date(
+                                                'd/m/Y',
+                                                strtotime(
+                                                    $pendingService['created_at']
+                                                )
+                                            ) ?>
+                                        </span>
+                                    </div>
+
+                                    <strong>
+                                        R$ <?= number_format(
+                                            (float) $pendingService['price'],
+                                            2,
+                                            ',',
+                                            '.'
+                                        ) ?>
+                                    </strong>
+                                </li>
+                            <?php endforeach; ?>
+                        </ul>
+                    <?php endif; ?>
+                </article>
+            </section>
+
+            <section class="filters-card">
+                <div class="section-heading">
+                    <div>
+                        <p>Pesquisa</p>
+                        <h2>Filtrar serviços</h2>
+                    </div>
+
+                    <a href="index.php?route=dashboard" class="clear-filters">
+                        Limpar filtros
+                    </a>
+                </div>
+
+                <form action="index.php" method="GET" class="filters-form">
+                    <input type="hidden" name="route" value="dashboard">
+
+                    <div class="filter-field">
+                        <label for="service_name">
+                            Nome do serviço
+                        </label>
+
+                        <input type="search" id="service_name" name="service_name" placeholder="Buscar pela descrição" maxlength="45" value="<?= htmlspecialchars(
+                            $filters['service_name'] ?? '',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>">
+                    </div>
+
+                    <div class="filter-field">
+                        <label for="user_name">
+                            Nome do funcionário
+                        </label>
+
+                        <input type="search" id="user_name" name="user_name" placeholder="Buscar pelo funcionário" maxlength="150" value="<?= htmlspecialchars(
+                            $filters['user_name'] ?? '',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>">
+                    </div>
+
+                    <div class="filter-field">
+                        <label for="status">
+                            Status
+                        </label>
+
+                        <select id="status" name="status">
+                            <option value="" <?= (
+                                $filters['status'] ?? ''
+                            ) === ''
+                                ? 'selected'
+                                : '' ?>> Todos </option>
+
+                            <option value="pendente" <?= (
+                                $filters['status'] ?? ''
+                            ) === 'pendente'
+                                ? 'selected'
+                                : '' ?>> Pendente </option>
+
+                            <option value="finalizado" <?= (
+                                $filters['status'] ?? ''
+                            ) === 'finalizado'
+                                ? 'selected'
+                                : '' ?>> Finalizado </option>
+                        </select>
+                    </div>
+
+                    <div class="filter-field">
+                        <label for="start_date">
+                            Data inicial
+                        </label>
+
+                        <input type="date" id="start_date" name="start_date" value="<?= htmlspecialchars(
+                            $filters['start_date'] ?? '',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>">
+                    </div>
+
+                    <div class="filter-field">
+                        <label for="end_date">
+                            Data final
+                        </label>
+
+                        <input type="date" id="end_date" name="end_date" value="<?= htmlspecialchars(
+                            $filters['end_date'] ?? '',
+                            ENT_QUOTES,
+                            'UTF-8'
+                        ) ?>">
+                    </div>
+
+                    <div class="filter-actions">
+                        <button type="submit">
+                            Filtrar
+                        </button>
+                    </div>
+                </form>
+            </section>
+
+            <section class="services-card">
+                <div class="section-heading">
+                    <div>
+                        <p>Visão geral</p>
+                        <h2>Serviços</h2>
+                    </div>
+
+                    <span class="services-count">
+                        <?= count($services) ?>
+                        serviço(s)
+                    </span>
+                </div>
+
+                <?php if ($services === []): ?>
+                    <p class="empty-message">
+                        Nenhum serviço encontrado.
+                    </p>
+                <?php else: ?>
+                    <div class="table-responsive">
+                        <table class="services-table">
+                            <thead>
+                                <tr>
+                                    <th>ID</th>
+                                    <th>Descrição</th>
+                                    <th>Valor</th>
+                                    <th>Status</th>
+                                    <th>Funcionário</th>
+                                    <th>Ações</th>
+                                </tr>
+                            </thead>
+
+                            <tbody>
+                                <?php foreach (
+                                    $services as $service
+                                ): ?>
+                                    <tr>
+                                        <td data-label="ID">
+                                            <?= (int) $service[
+                                                'id_service'
+                                            ] ?>
+                                        </td>
+
+                                        <td data-label="Descrição">
+                                            <?= htmlspecialchars(
+                                                $service[
+                                                    'description'
+                                                ],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </td>
+
+                                        <td data-label="Valor">
+                                            R$ <?= number_format(
+                                                (float) $service[
+                                                    'price'
+                                                ],
+                                                2,
+                                                ',',
+                                                '.'
+                                            ) ?>
+                                        </td>
+
+                                        <td data-label="Status">
+                                            <span class="status-badge <?= (
+                                                $service[
+                                                    'finished_at'
+                                                ] === null
+                                            )
+                                                ? 'status-pending'
+                                                : 'status-finished' ?>">
+                                                <?= htmlspecialchars(
+                                                    $service['status'],
+                                                    ENT_QUOTES,
+                                                    'UTF-8'
+                                                ) ?>
+                                            </span>
+                                        </td>
+
+                                        <td data-label="Funcionário">
+                                            <?= htmlspecialchars(
+                                                $service['user_name'],
+                                                ENT_QUOTES,
+                                                'UTF-8'
+                                            ) ?>
+                                        </td>
+
+                                        <td data-label="Ações">
+                                            <div class="service-actions">
+                                                <a href="index.php?route=service-edit&id=<?= (int) $service[
+                                                    'id_service'
+                                                ] ?>" class="action-button action-edit">
+                                                    Alterar
+                                                </a>
+
+                                                <?php if (
+                                                    $service[
+                                                        'finished_at'
+                                                    ] === null
+                                                ): ?>
+                                                    <form action="index.php?route=service-finish" method="POST" class="finish-service-form">
+                                                        <input type="hidden" name="service_id" value="<?= (int) $service[
+                                                            'id_service'
+                                                        ] ?>">
+
+                                                        <button type="submit" class="action-button action-finish">
+                                                            Finalizar
+                                                        </button>
+                                                    </form>
+                                                <?php endif; ?>
+
+                                                <form action="index.php?route=service-delete" method="POST" class="delete-service-form">
+                                                    <input type="hidden" name="service_id" value="<?= (int) $service[
+                                                        'id_service'
+                                                    ] ?>">
+
+                                                    <button type="submit" class="action-button action-delete">
+                                                        Excluir
+                                                    </button>
+                                                </form>
+                                            </div>
+                                        </td>
+                                    </tr>
+                                <?php endforeach; ?>
+                            </tbody>
+                        </table>
+                    </div>
+                <?php endif; ?>
+            </section>
+        </main>
+    </div>
 
     <script src="assets/js/services.js"></script>
 </body>
