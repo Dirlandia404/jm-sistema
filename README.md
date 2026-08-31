@@ -83,4 +83,4 @@ O envio de e-mail utiliza a função `mail()` do PHP. Para funcionar, é necess�
 
 O campo de senha foi definido como VARCHAR(45) na modelagem fornecida, não possuindo espaço suficiente para armazenar com segurança o resultado de password_hash(). Por isso, mantive o formato original do banco.
 
--A modelagem fornecida mistura nomes de campos em português e inglês, como `ativo`. Mantive a estrutura original para evitar mudanças no modelo, mas futuramente os campos poderiam ser padronizados para `active` e `updated_at` isso na tabela de user.
+A modelagem fornecida mistura nomes de campos em português e inglês, como `ativo`. Mantive a estrutura original para evitar mudanças no modelo, mas futuramente os campos poderiam ser padronizados para `active` e `updated_at` isso na tabela de user.
